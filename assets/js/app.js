@@ -144,6 +144,8 @@ const lightbox  = document.getElementById('lightbox');
 const lbImg     = document.getElementById('lb-img');
 const lbCaption = document.getElementById('lb-caption');
 const lbCounter = document.getElementById('lb-counter');
+const scrollFab = document.getElementById('scroll-fab');
+const scrollFabIcon = document.getElementById('scroll-fab-icon');
 
 const openSidebar  = () => { sidebar.classList.add('open'); overlay.classList.add('open'); document.body.style.overflow='hidden'; };
 const closeSidebar = () => { sidebar.classList.remove('open'); overlay.classList.remove('open'); document.body.style.overflow=''; };
@@ -165,7 +167,7 @@ function buildNav() {
       <span class="sb-group-label">Proyectos</span>
       ${PROJECTS.map(p=>`
         <button class="sb-item ${currentView===p.id?'active':''}" data-view="${p.id}">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span class="sb-project-icon" aria-hidden="true">🌭</span>
           ${p.number} — ${p.title}
         </button>`).join('')}
     </div>`;
@@ -175,6 +177,25 @@ function buildNav() {
 }
 
 function navigate(id) { currentView=id; buildNav(); renderView(); window.scrollTo({top:0}); }
+
+function updateScrollFab() {
+  if (!scrollFab || !scrollFabIcon) return;
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollTop = window.scrollY || document.documentElement.scrollTop || 0;
+
+  if (maxScroll < 260) {
+    scrollFab.classList.add('hidden');
+    return;
+  }
+
+  scrollFab.classList.remove('hidden');
+  const goTop = scrollTop > maxScroll * 0.45;
+  scrollFab.dataset.direction = goTop ? 'up' : 'down';
+  scrollFabIcon.textContent = goTop ? '↑' : '↓';
+  const label = goTop ? 'Ir arriba' : 'Ir abajo';
+  scrollFab.setAttribute('aria-label', label);
+  scrollFab.title = label;
+}
 
 function renderView() {
   if (currentView==='home') { renderHome(); topbarName.textContent='Inicio'; }
@@ -228,7 +249,9 @@ function renderProject(p) {
       </div>
     </div>`;
 
-  if (p.callout) html+=`<div class="callout"></span><div class="callout-body">${p.callout.text}</div></div>`;
+  if (p.callout) {
+    html += `<div class="callout">${p.callout.icon ? `<span class="callout-icon">${p.callout.icon}</span>` : ''}<div class="callout-body">${p.callout.text}</div></div>`;
+  }
 
   // PDF PRIMERO — lámina destacada al tope
   if (p.pdfs?.length) {
@@ -279,9 +302,17 @@ function renderProject(p) {
   if (p.notes?.trim()) html+=`<div class="section"><div class="section-label">Notas técnicas</div><div class="note-card"><div class="prose">${marked.parse(p.notes)}</div></div></div>`;
 
   if (p.references?.length) {
-    html+=`<div class="section"><div class="section-label">Referencias — APA 7 (${p.references.length} fuentes)</div><div class="ref-list">${
-      p.references.map(r=>`<div class="ref-item">${r.url?`${esc(r.text)} <a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a>`:esc(r.text)}</div>`).join('')
-    }</div></div>`;
+    html+=`<div class="section">
+      <details class="ref-toggle" open>
+        <summary class="ref-summary">
+          <span>Referencias bibliográficas (APA 7)</span>
+          <span class="ref-count">${p.references.length} fuentes</span>
+        </summary>
+        <div class="ref-list">${
+          p.references.map((r, idx)=>`<div class="ref-item"><span class="ref-index">[${idx + 1}]</span><span class="ref-text">${esc(r.text)}</span>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">Ver fuente</a>`:''}</div>`).join('')
+        }</div>
+      </details>
+    </div>`;
   }
 
   html+=`</div>${footerHTML()}`;
@@ -344,6 +375,16 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'){ lbIdx=(lbIdx+1)%lbImages.length; updateLB(); }
 });
 
+if (scrollFab) {
+  scrollFab.addEventListener('click', () => {
+    const direction = scrollFab.dataset.direction === 'up' ? 'up' : 'down';
+    const targetTop = direction === 'up' ? 0 : document.documentElement.scrollHeight;
+    window.scrollTo({ top: targetTop, behavior: 'smooth' });
+  });
+  window.addEventListener('scroll', updateScrollFab, { passive: true });
+  window.addEventListener('resize', updateScrollFab);
+}
+
 function footerHTML(){
   return `<footer>
     <div class="footer-grid">
@@ -386,3 +427,4 @@ function esc(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replac
 
 buildNav();
 renderView();
+updateScrollFab();
