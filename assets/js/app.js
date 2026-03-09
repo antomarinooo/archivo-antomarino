@@ -10,7 +10,7 @@ const PROJECTS = [
     title: 'Investigación Identidad de Marca — Perro Caliente',
     subject: 'Taller Gráfico I',
     year: '2026',
-    parte: 'Parte 1 de 3',
+    parte: 'Etapa de investigación',
     tags: ['investigación', 'identidad de marca', 'branding', 'comida'],
     description: 'Investigación histórica, cultural y visual sobre el perro caliente como objeto de diseño. Incluye antecedentes históricos de la salchicha, análisis de variedades latinoamericanas, estudio de referentes gráficos y estado del arte de marcas existentes.',
     cover: 'assets/img/img-pizzino.png',
@@ -34,7 +34,7 @@ El trabajo está dividido en tres secciones principales que conforman la lámina
 
     callout: {
       icon: '',
-      text: 'Docentes: Andrea Torres, Ignacia Santillán · Taller Gráfico I · 9 de Marzo de 2026 · Esta lámina es la primera parte de un proyecto de diseño de identidad de marca.'
+      text: 'Docentes: Andrea Torres, Ignacia Santillán\nTaller Gráfico I\n9 de Marzo de 2026.'
     },
 
     gallery: [
@@ -302,16 +302,16 @@ function renderProject(p) {
   if (p.notes?.trim()) html+=`<div class="section"><div class="section-label">Notas técnicas</div><div class="note-card"><div class="prose">${marked.parse(p.notes)}</div></div></div>`;
 
   if (p.references?.length) {
+    const refToggleId = `ref-toggle-${p.id}`;
     html+=`<div class="section">
-      <details class="ref-toggle" open>
-        <summary class="ref-summary">
-          <span>Referencias bibliográficas (APA 7)</span>
-          <span class="ref-count">${p.references.length} fuentes</span>
-        </summary>
-        <div class="ref-list">${
-          p.references.map((r, idx)=>`<div class="ref-item"><span class="ref-index">[${idx + 1}]</span><span class="ref-text">${esc(r.text)}</span>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">Ver fuente</a>`:''}</div>`).join('')
-        }</div>
-      </details>
+      <div class="ref-head">
+        <div class="ref-title">Referencias bibliográficas (APA 7)</div>
+        <span class="ref-count">${p.references.length} fuentes</span>
+      </div>
+      <div class="ref-list" id="${refToggleId}">${
+        p.references.map((r, idx)=>`<div class="ref-item${idx >= 5 ? ' is-hidden' : ''}"><span class="ref-index">[${idx + 1}]</span><span class="ref-text">${esc(r.text)}</span>${r.url?` <a href="${esc(r.url)}" target="_blank" rel="noopener">Ver fuente</a>`:''}</div>`).join('')
+      }</div>
+      ${p.references.length > 5 ? `<button class="ref-more-btn" type="button" data-ref-target="${refToggleId}" aria-expanded="false"><span class="ref-more-icon" aria-hidden="true">▾</span><span class="ref-more-label">Ver más</span></button>` : ''}
     </div>`;
   }
 
@@ -328,7 +328,37 @@ function renderProject(p) {
     });
   }
 
+  setupReferencesToggle();
+
   if (p.pdfs?.length) p.pdfs.forEach((pdf,i)=>{ if(pdf.src) renderPDF(pdf.src,`pdfcanvas-${p.id}-${i}`); });
+}
+
+function setupReferencesToggle() {
+  const buttons = viewRoot.querySelectorAll('.ref-more-btn');
+  if (!buttons.length) return;
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.getAttribute('data-ref-target');
+      if (!targetId) return;
+
+      const list = document.getElementById(targetId);
+      if (!list) return;
+
+      const hiddenItems = list.querySelectorAll('.ref-item.is-hidden');
+      const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+      const nextExpanded = !isExpanded;
+
+      hiddenItems.forEach((item) => {
+        item.style.display = nextExpanded ? 'block' : 'none';
+      });
+
+      btn.setAttribute('aria-expanded', String(nextExpanded));
+      const label = btn.querySelector('.ref-more-label');
+      if (label) label.textContent = nextExpanded ? 'Ver menos' : 'Ver más';
+      btn.classList.toggle('expanded', nextExpanded);
+    });
+  });
 }
 
 async function renderPDF(src, cid) {
@@ -390,7 +420,7 @@ function footerHTML(){
     <div class="footer-grid">
       <div class="footer-about">
         <h3 class="footer-h">Sobre este archivo</h3>
-        <p class="footer-p">Repositorio personal de proyectos académicos de diseño. Un espacio para documentar procesos, presentar resultados y conservar el trabajo durante la carrera.</p>
+        <p class="footer-p">Repositorio personal de proyectos académicos de diseño.</p>
         <div class="footer-bullets">
           <div class="footer-bullet"><div class="footer-dot"></div><span>Uso personal</span></div>
           <div class="footer-bullet"><div class="footer-dot"></div><span>Sin recolección de datos</span></div>
@@ -415,9 +445,9 @@ function footerHTML(){
       <p class="footer-copy">© ${new Date().getFullYear()} Anto Marino — Todos los derechos reservados</p>
       <div class="footer-tech">
         <span class="footer-tech-label">Hecho con</span>
-        <span class="footer-tech-item">HTML · JS</span>
-        <span class="footer-tech-item">PDF.js</span>
-        <span class="footer-tech-item">marked.js</span>
+        <span class="footer-tech-item">HTML</span>
+        <span class="footer-tech-item">JS</span>
+        <span class="footer-tech-item">CSS</span>
       </div>
     </div>
   </footer>`;
