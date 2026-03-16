@@ -3,6 +3,38 @@
   Nota: este archivo esta organizado por bloques de UI para ubicar cambios rapido.
 */
 
+@font-face {
+  font-family: "Extenda Trial";
+  src: url("../fonts/extenda/Extenda-Variable-TRIAL.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Extenda Variable";
+  src: url("../fonts/extenda/Extenda-Variable-TRIAL.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Extenda Deca";
+  src: url("../fonts/extenda/Extenda-30-Deca-TRIAL.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Extenda Peta";
+  src: url("../fonts/extenda/Extenda-80-Peta-TRIAL.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
 /* ========== 1) Variables de tema ========== */
 :root {
   --background: #ffffff;
@@ -1105,6 +1137,112 @@ body {
 
 .ref-more-btn.expanded .ref-more-icon {
   transform: rotate(180deg) translateY(1px);
+}
+
+.type-viewer-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.type-viewer-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+.type-viewer-input {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 9px 10px;
+  font-size: 13px;
+  font-family: var(--font);
+}
+
+.type-viewer-input:focus {
+  outline: none;
+  border-color: #a1a1aa;
+}
+
+.type-viewer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 10px;
+}
+
+.type-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: 12px;
+}
+
+.type-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.type-card-head strong {
+  font-size: 14px;
+  color: var(--foreground);
+}
+
+.type-card-head span {
+  font-size: 11px;
+  color: var(--muted-foreground);
+}
+
+.type-card-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.type-variant-select {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-family: var(--font);
+}
+
+.type-variant-select:focus {
+  outline: none;
+  border-color: #a1a1aa;
+}
+
+.type-sample {
+  min-height: 74px;
+  border: 1px dashed var(--border);
+  border-radius: 4px;
+  padding: 10px;
+  font-size: clamp(21px, 3vw, 30px);
+  line-height: 1.2;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  overflow-wrap: anywhere;
+}
+
+.type-meta {
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted-foreground);
+}
+
+.type-meta span {
+  color: var(--foreground);
+  font-weight: 500;
 }
 
 /* ========== 13) Footer ========== */

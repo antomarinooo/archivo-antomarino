@@ -1,5 +1,53 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
+const loadedDynamicFonts = new Set();
+
+function buildExtendaVariants() {
+  const scales = [
+    { code: '10', name: 'Pica' },
+    { code: '15', name: 'Nano' },
+    { code: '20', name: 'Micro' },
+    { code: '30', name: 'Deca' },
+    { code: '40', name: 'Hecto' },
+    { code: '50', name: 'Mega' },
+    { code: '60', name: 'Giga' },
+    { code: '70', name: 'Tera' },
+    { code: '80', name: 'Peta' },
+    { code: '90', name: 'Exa' },
+    { code: '100', name: 'Yotta' },
+  ];
+  const styles = [
+    { suffix: '', label: 'Regular' },
+    { suffix: '-Italic', label: 'Italic', fontStyle: 'italic' },
+    { suffix: '-Backslant', label: 'Backslant', fontStyle: 'oblique' },
+  ];
+  const prefixes = [
+    { code: '', label: '' },
+    { code: 'XS-', label: 'XS ' },
+  ];
+
+  const variants = [
+    { label: 'Variable', family: 'Extenda Variable' },
+    { label: 'Extendable', family: 'Extenda Dynamic Extendable', source: 'assets/fonts/extenda/Extendable-TRIAL.ttf' },
+  ];
+
+  scales.forEach((scale) => {
+    styles.forEach((style) => {
+      prefixes.forEach((prefix) => {
+        const familyToken = `${prefix.code}${scale.code}-${scale.name}${style.suffix}`;
+        variants.push({
+          label: `${prefix.label}${scale.name} ${style.label}`.trim(),
+          family: `Extenda Dynamic ${familyToken}`,
+          source: `assets/fonts/extenda/Extenda-${familyToken}-TRIAL.ttf`,
+          fontStyle: style.fontStyle || 'normal',
+        });
+      });
+    });
+  });
+
+  return variants;
+}
+
 /* ════════════════════════════════════════════════════
    DATOS — Editá aquí para agregar o cambiar proyectos
    ════════════════════════════════════════════════════ */
@@ -7,13 +55,13 @@ const PROJECTS = [
   {
     id: 'p1',
     number: '01',
-    title: 'Investigación Identidad de Marca — Perro Caliente',
+    title: 'Identidad Visual Perro Caliente',
     subject: 'Taller Gráfico I',
     year: '2026',
-    parte: 'Etapa de investigación',
-    tags: ['investigación', 'identidad de marca', 'branding', 'comida'],
-    description: 'Investigación histórica, cultural y visual sobre el perro caliente como objeto de diseño. Incluye antecedentes históricos de la salchicha, análisis de variedades latinoamericanas, estudio de referentes gráficos y estado del arte de marcas existentes.',
-    cover: 'assets/img/img-pizzino.png',
+    parte: 'Etapa 1: Investigación · Etapa 2: Construcción de marca',
+    tags: ['investigación', 'identidad de marca', 'branding', 'perro caliente'],
+    description: 'Investigación histórica, cultural y visual sobre el perro caliente como objeto de diseño. Incluye antecedentes históricos de la salchicha, análisis de variedades latinoamericanas, estudio de referentes gráficos, estado del arte de marcas existentes y propuesta de diseño.\n\nDocentes:\nAndrea Torres, Ignacia Santillán\nTaller Gráfico I\nMarzo de 2026.',
+    cover: 'assets/img/perritoschao-1.jpg',
 
     text: `
 ## Sobre el proyecto
@@ -21,6 +69,7 @@ const PROJECTS = [
 Esta investigación aborda el **perro caliente como objeto de diseño de identidad de marca**, explorando su historia, sus variaciones culturales en Latinoamérica y el panorama visual de marcas existentes.
 
 El trabajo está dividido en tres secciones principales que conforman la lámina.
+
     `,
 
     timeline: [
@@ -31,11 +80,6 @@ El trabajo está dividido en tres secciones principales que conforman la lámina
       { title: 'Estado del arte — Latinoamérica', desc: 'Análisis de Chori (AR), Perritos Chao (CL), Rulo (VE) y referentes gráficos de food branding contemporáneo.' },
       { title: 'Diagramación de lámina en Illustrator', desc: 'Síntesis visual de toda la investigación en 3 láminas A3.' },
     ],
-
-    callout: {
-      icon: '',
-      text: 'Docentes: Andrea Torres, Ignacia Santillán\nTaller Gráfico I\n9 de Marzo de 2026.'
-    },
 
     gallery: [
       { src: 'assets/img/img-nathans.png', caption: "Nathan's Famous — campaña de marca EE.UU. (Smithfield Foods, 2024)" },
@@ -80,16 +124,93 @@ El trabajo está dividido en tres secciones principales que conforman la lámina
 
     downloads: [
       { name: 'Lámina investigación', desc: 'PDF · 3 láminas A3', url: 'assets/pdf/c1-lamina-investigacion-taller-grafico-i-antonia-cajigal-copy.pdf', ext: 'PDF', size: '' },
+      { name: 'Etapa 2 · Lámina investigación actualizada', desc: 'PDF · doble carta vertical', url: 'assets/pdf/L2-3-INVESTIGACION_CAJIGAL_ANTONIA.pdf', ext: 'PDF', size: '' },
     ],
 
     notes: `
 **Herramientas:** Adobe Illustrator CC 2025
 
-**Formato de entrega:** PDF · 3 láminas A3 (420 × 297 mm)
+**Formato de entrega:** PDF · 3 láminas doble carta (420 × 297 mm)
 
 **Metodología:** La investigación combina fuentes historiográficas, gastronómicas, periodísticas y referencias de diseño contemporáneo. El análisis del estado del arte se realizó sobre marcas activas durante 2024–2025 en Behance, Instagram y sitios oficiales.
 
     `,
+
+    stage1: {
+      title: 'Etapa 1: Investigación',
+      description: 'Levantamiento histórico, cultural y visual del perro caliente para definir fundamentos conceptuales, referentes de marca y criterios estratégicos de diseño.'
+    },
+
+    stage2: {
+      title: 'Etapa 2: Construcción de marca',
+      description: `
+En esta etapa se desarrolló la **formalización técnica de la investigación** y la **construcción inicial del sistema de identidad**, trabajando en **Affinity Studio** (Publisher + Designer).
+
+Se estructuraron **dos láminas doble carta en formato vertical** para ordenar jerarquías de información, narrativa visual y criterios de síntesis gráfica.
+
+### Procesos técnicos aplicados
+
+- Definición de conceptos e ideación
+- Lluvia de ideas y selección de naming
+- Construcción de paleta CMYK
+- Selección tipográfica display + sans serif
+- Sistema de formas y geometría
+- Integración fotografía e ilustración
+- Sistema de stickers y elementos gráficos
+- Copywriting y brand voice
+      `,
+      pdfs: [
+        {
+          src: 'assets/pdf/L2-3-INVESTIGACION_CAJIGAL_ANTONIA.pdf',
+          label: 'Investigación actualizada + construcción de marca',
+          description: 'PDF con ambas láminas doble carta vertical · Affinity Studio'
+        },
+      ],
+    },
+
+    typography: {
+      title: 'Visualizador de tipografías',
+      sample: 'REBALSE',
+      fonts: [
+        {
+          name: 'Extenda',
+          family: 'Extenda Trial',
+          source: 'Zetafonts',
+          style: '68 variantes',
+          license: 'Free for personal use',
+          usage: 'Títulos, logotipo y acentos de marca',
+          variants: buildExtendaVariants(),
+        },
+        {
+          name: 'Poppins',
+          family: 'Poppins',
+          source: 'Google Fonts',
+          style: '18 variantes',
+          license: 'Open source license',
+          usage: 'Textos corridos, subtítulos y UI',
+          variants: [
+            { label: 'Thin 100', family: 'Poppins', weight: 100 },
+            { label: 'ExtraLight 200', family: 'Poppins', weight: 200 },
+            { label: 'Light 300', family: 'Poppins', weight: 300 },
+            { label: 'Regular 400', family: 'Poppins', weight: 400 },
+            { label: 'Medium 500', family: 'Poppins', weight: 500 },
+            { label: 'SemiBold 600', family: 'Poppins', weight: 600 },
+            { label: 'Bold 700', family: 'Poppins', weight: 700 },
+            { label: 'ExtraBold 800', family: 'Poppins', weight: 800 },
+            { label: 'Black 900', family: 'Poppins', weight: 900 },
+            { label: 'Thin 100 Italic', family: 'Poppins', weight: 100, fontStyle: 'italic' },
+            { label: 'ExtraLight 200 Italic', family: 'Poppins', weight: 200, fontStyle: 'italic' },
+            { label: 'Light 300 Italic', family: 'Poppins', weight: 300, fontStyle: 'italic' },
+            { label: 'Regular 400 Italic', family: 'Poppins', weight: 400, fontStyle: 'italic' },
+            { label: 'Medium 500 Italic', family: 'Poppins', weight: 500, fontStyle: 'italic' },
+            { label: 'SemiBold 600 Italic', family: 'Poppins', weight: 600, fontStyle: 'italic' },
+            { label: 'Bold 700 Italic', family: 'Poppins', weight: 700, fontStyle: 'italic' },
+            { label: 'ExtraBold 800 Italic', family: 'Poppins', weight: 800, fontStyle: 'italic' },
+            { label: 'Black 900 Italic', family: 'Poppins', weight: 900, fontStyle: 'italic' },
+          ],
+        },
+      ],
+    },
 
     references: [
       { text: 'Apitz, C. (2024). Filippo Costa, un ícono de la Cultura Urbana de Caracas.', url: 'https://carlosapitz.com/filippo-costa/' },
@@ -123,15 +244,21 @@ El trabajo está dividido en tres secciones principales que conforman la lámina
       { text: 'Smithfield Foods. (2024). Nathan\'s Famous introduces talking hot dog.', url: 'https://www.smithfieldfoods.com/press-room/nathan-s-famous-introduces-talking-hot-dog-to-promote-new-brand-platform/' },
       { text: 'The Conversation. (2016). How sausages conquered the globe.', url: 'https://theconversation.com/how-sausages-conquered-the-globe-67405' },
       { text: 'Wikimedia Commons. (s.f.). Puesto callejero de completos [Fotografía].', url: 'https://commons.wikimedia.org/wiki/File:Puesto_callejero_de_Completos_%28%22hot_dogs%29.JPG' },
+      { text: 'Real Academia Española. (s.f.). Atrever. Diccionario de la lengua española. Recuperado el 15 de marzo de 2026.', url: 'https://dle.rae.es/atrever' },
+      { text: 'Real Academia Española. (s.f.). Mezcla. Diccionario de la lengua española. Recuperado el 15 de marzo de 2026.', url: 'https://dle.rae.es/mezcla' },
+      { text: 'Real Academia Española. (s.f.). Abundancia. Diccionario de la lengua española. Recuperado el 15 de marzo de 2026.', url: 'https://dle.rae.es/abundancia' },
+      { text: 'National Hot Dog and Sausage Council. (s.f.). Hot dog etiquette.', url: 'https://www.hot-dog.org/culture/hot-dog-etiquette' },
+      { text: 'Mukherjee, T. (2014, 27 de enero). Hot dogs: how do you eat yours? The Guardian.', url: 'https://www.theguardian.com/lifeandstyle/wordofmouth/2014/jan/27/hotdogs-beef-pork-mustard-beer' },
     ],
   },
-  /* ─── Acá podés agregar más proyectos ─── */
+  /* ─── Acá agregar más proyectos ─── */
 ];
 /* ════════════════════════════════════════════════════
    FIN DE DATOS
    ════════════════════════════════════════════════════ */
 
 let currentView = 'home', lbImages = [], lbIdx = 0;
+const GALLERY_BATCH_SIZE = 12;
 const isFileProtocol = window.location.protocol === 'file:';
 const sidebar   = document.getElementById('sidebar');
 const overlay   = document.getElementById('overlay');
@@ -188,6 +315,7 @@ function updateScrollFab() {
     return;
   }
 
+  // boton scroll top bottom
   scrollFab.classList.remove('hidden');
   const goTop = scrollTop > maxScroll * 0.45;
   scrollFab.dataset.direction = goTop ? 'up' : 'down';
@@ -234,6 +362,9 @@ function renderHome() {
 }
 
 function renderProject(p) {
+  const projectDesc = esc(p.description || '').replace(/\n/g, '<br>');
+  const galleryInitialCount = p.gallery?.length ? Math.min(GALLERY_BATCH_SIZE, p.gallery.length) : 0;
+  const galleryThumbHTML = (img, idx) => `<div class="gallery-thumb" data-gi="${idx}" tabindex="0" role="button"><img src="${img.src}" alt="${img.caption || ''}" loading="lazy" decoding="async" fetchpriority="low"/><div class="gallery-thumb-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>`;
   let html = `<div class="project-page">
     <button class="back-btn" id="back-btn">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
@@ -244,7 +375,7 @@ function renderProject(p) {
       <div class="project-header-body">
         <div class="project-kicker">${p.subject} · ${p.year}${p.parte?' · '+p.parte:''}</div>
         <h2 class="project-title">${p.title}</h2>
-        <p class="project-desc">${p.description}</p>
+        <p class="project-desc">${projectDesc}</p>
         <div class="project-meta-row">${p.tags.map(t=>`<span class="badge badge-secondary">${t}</span>`).join('')}</div>
       </div>
     </div>`;
@@ -253,12 +384,15 @@ function renderProject(p) {
     html += `<div class="callout">${p.callout.icon ? `<span class="callout-icon">${p.callout.icon}</span>` : ''}<div class="callout-body">${p.callout.text}</div></div>`;
   }
 
+  html += `<div class="section"><div class="section-label">${esc(p.stage1?.title || 'Etapa 1: Investigación')}</div>${p.stage1?.description ? `<div class="prose"><p>${esc(p.stage1.description)}</p></div>` : ''}</div>`;
+
   // PDF PRIMERO — lámina destacada al tope
   if (p.pdfs?.length) {
     p.pdfs.forEach((pdf,i)=>{
       const cid=`pdfcanvas-${p.id}-${i}`;
       html+=`<div class="section">
-        <div class="section-label">Lámina — ${esc(pdf.label)}</div>
+
+        <div style="font-size:13px;color:var(--foreground);margin-bottom:6px;font-weight:500;">${esc(pdf.label)}</div>
         <div style="font-size:12px;color:var(--muted-foreground);margin-bottom:10px;">${esc(pdf.description)}</div>
         <div class="pdf-container">
           <div class="pdf-pages" id="${cid}"><div class="pdf-loading">Cargando lámina…</div></div>
@@ -284,8 +418,8 @@ function renderProject(p) {
 
   if (p.gallery?.length) {
     html+=`<div class="section"><div class="section-label">Galería de imágenes — ${p.gallery.length} imágenes</div><div class="gallery-grid" id="gal-${p.id}">${
-      p.gallery.map((img,i)=>`<div class="gallery-thumb" data-gi="${i}" tabindex="0" role="button"><img src="${img.src}" alt="${img.caption||''}" loading="lazy"/><div class="gallery-thumb-overlay"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></div></div>`).join('')
-    }</div></div>`;
+      p.gallery.slice(0, galleryInitialCount).map((img,i)=>galleryThumbHTML(img,i)).join('')
+    }</div>${p.gallery.length > galleryInitialCount ? `<button class="btn btn-outline btn-sm" type="button" id="gal-more-${p.id}" data-next="${galleryInitialCount}" style="margin-top:12px;">Cargar más imágenes</button>` : ''}</div>`;
   }
 
   if (p.downloads?.length) {
@@ -299,7 +433,71 @@ function renderProject(p) {
     }</div></div>`;
   }
 
-  if (p.notes?.trim()) html+=`<div class="section"><div class="section-label">Notas técnicas</div><div class="note-card"><div class="prose">${marked.parse(p.notes)}</div></div></div>`;
+  if (p.stage2) {
+    html += `<div class="section"><div class="section-label">${esc(p.stage2.title)}</div>${p.stage2.description?.trim() ? `<div class="prose">${marked.parse(p.stage2.description)}</div>` : ''}</div>`;
+
+    if (p.stage2.pdfs?.length) {
+      p.stage2.pdfs.forEach((pdf, i) => {
+        const cid = `pdfcanvas-stage2-${p.id}-${i}`;
+        html += `<div class="section">
+
+          <div style="font-size:13px;color:var(--foreground);margin-bottom:6px;font-weight:500;">${esc(pdf.label)}</div>
+          <div style="font-size:12px;color:var(--muted-foreground);margin-bottom:10px;">${esc(pdf.description || '')}</div>
+          <div class="pdf-container">
+            <div class="pdf-pages" id="${cid}"><div class="pdf-loading">Cargando lámina…</div></div>
+            <div class="pdf-bar">
+              <div class="pdf-info">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                ${esc(pdf.label)}
+              </div>
+              <a href="${esc(pdf.src)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">↗ Abrir en nueva pestaña</a>
+            </div>
+          </div>
+        </div>`;
+      });
+    }
+  }
+
+  if (p.typography?.fonts?.length) {
+    const typeInputId = `type-preview-input-${p.id}`;
+    const defaultSample = esc(p.typography.sample || 'REBALSE');
+    html += `<div class="section">
+      <div class="section-label">${esc(p.typography.title || 'Visualizador de tipografías')}</div>
+      <div class="type-viewer-controls">
+        <label for="${typeInputId}" class="type-viewer-label">Texto de prueba</label>
+        <input id="${typeInputId}" class="type-viewer-input" type="text" value="${defaultSample}" maxlength="90"/>
+      </div>
+      <div class="type-viewer-grid">${
+        p.typography.fonts.map((font) => {
+          const variants = font.variants?.length ? font.variants : [{ label: font.style || 'Default', family: font.family }];
+          const first = variants[0];
+          const family = first.family || font.family;
+          const weight = first.weight ? `font-weight:${first.weight};` : '';
+          const fstyle = first.fontStyle ? `font-style:${first.fontStyle};` : '';
+
+          return `<article class="type-card">
+          <div class="type-card-head">
+            <strong>${esc(font.name)}</strong>
+            <span>${esc(font.style || '')}</span>
+          </div>
+          <div class="type-card-controls">
+            <label class="type-viewer-label" for="type-variant-${p.id}-${esc(font.name)}">Variante</label>
+            <select class="type-variant-select" id="type-variant-${p.id}-${esc(font.name)}" data-type-preview="${p.id}">
+              ${variants.map((variant, idx) => `<option value="${idx}" data-family="${esc(variant.family || font.family)}" data-source="${esc(variant.source || '')}" data-weight="${esc(String(variant.weight || ''))}" data-font-style="${esc(variant.fontStyle || '')}">${esc(variant.label)}</option>`).join('')}
+            </select>
+          </div>
+          <div class="type-sample" data-type-preview="${p.id}" style="font-family: '${esc(family)}', var(--font);${weight}${fstyle}">${defaultSample}</div>
+          <div class="type-meta">
+            <div><span>Familia:</span> ${esc(font.family)}</div>
+            <div><span>Fuente:</span> ${esc(font.source || '')}</div>
+            <div><span>Licencia:</span> ${esc(font.license || '')}</div>
+            <div><span>Uso:</span> ${esc(font.usage || '')}</div>
+          </div>
+        </article>`;
+      }).join('')
+      }</div>
+    </div>`;
+  }
 
   if (p.references?.length) {
     const refToggleId = `ref-toggle-${p.id}`;
@@ -321,16 +519,92 @@ function renderProject(p) {
 
   if (p.gallery?.length) {
     lbImages=p.gallery;
-    document.getElementById(`gal-${p.id}`).querySelectorAll('.gallery-thumb').forEach(el=>{
-      const open=()=>openLightbox(+el.dataset.gi);
-      el.addEventListener('click',open);
-      el.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ')open(); });
-    });
+    const galleryEl = document.getElementById(`gal-${p.id}`);
+    const bindThumb = (el) => {
+      const open = () => openLightbox(+el.dataset.gi);
+      el.addEventListener('click', open);
+      el.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' ')open(); });
+    };
+
+    galleryEl.querySelectorAll('.gallery-thumb').forEach(bindThumb);
+
+    const moreBtn = document.getElementById(`gal-more-${p.id}`);
+    if (moreBtn) {
+      moreBtn.addEventListener('click', () => {
+        const start = Number(moreBtn.dataset.next || 0);
+        const end = Math.min(start + GALLERY_BATCH_SIZE, lbImages.length);
+        const chunk = lbImages.slice(start, end)
+          .map((img, localIdx) => galleryThumbHTML(img, start + localIdx))
+          .join('');
+        galleryEl.insertAdjacentHTML('beforeend', chunk);
+        galleryEl.querySelectorAll('.gallery-thumb').forEach((el) => {
+          if (!el.dataset.bound) {
+            bindThumb(el);
+            el.dataset.bound = '1';
+          }
+        });
+        moreBtn.dataset.next = String(end);
+        if (end >= lbImages.length) moreBtn.remove();
+      });
+    }
   }
 
   setupReferencesToggle();
+  setupTypographyViewer(p.id);
 
   if (p.pdfs?.length) p.pdfs.forEach((pdf,i)=>{ if(pdf.src) renderPDF(pdf.src,`pdfcanvas-${p.id}-${i}`); });
+  if (p.stage2?.pdfs?.length) p.stage2.pdfs.forEach((pdf,i)=>{ if(pdf.src) renderPDF(pdf.src,`pdfcanvas-stage2-${p.id}-${i}`); });
+}
+
+function setupTypographyViewer(projectId) {
+  const input = document.getElementById(`type-preview-input-${projectId}`);
+  if (!input) return;
+
+  const samples = viewRoot.querySelectorAll(`.type-sample[data-type-preview="${projectId}"]`);
+  const variantSelects = viewRoot.querySelectorAll(`.type-variant-select[data-type-preview="${projectId}"]`);
+  const updateSamples = () => {
+    const text = input.value?.trim() || 'REBALSE';
+    samples.forEach((sample) => {
+      sample.textContent = text;
+    });
+  };
+
+  input.addEventListener('input', updateSamples);
+
+  variantSelects.forEach((select) => {
+    select.addEventListener('change', async () => {
+      const option = select.selectedOptions?.[0];
+      if (!option) return;
+
+      const card = select.closest('.type-card');
+      const sample = card?.querySelector('.type-sample');
+      if (!sample) return;
+
+      const family = option.dataset.family || 'Poppins';
+      const source = option.dataset.source || '';
+      const weight = option.dataset.weight || '';
+      const fontStyle = option.dataset.fontStyle || '';
+
+      if (source) await ensureDynamicFont(family, source);
+
+      sample.style.fontFamily = `'${family}', var(--font)`;
+      sample.style.fontWeight = weight || '400';
+      sample.style.fontStyle = fontStyle || 'normal';
+    });
+  });
+}
+
+async function ensureDynamicFont(family, source) {
+  if (!family || !source || loadedDynamicFonts.has(family)) return;
+
+  try {
+    const fontFace = new FontFace(family, `url('${source}')`);
+    await fontFace.load();
+    document.fonts.add(fontFace);
+    loadedDynamicFonts.add(family);
+  } catch (error) {
+    console.warn('No se pudo cargar la variante tipografica:', source, error);
+  }
 }
 
 function setupReferencesToggle() {
