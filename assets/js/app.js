@@ -124,7 +124,9 @@ El trabajo está dividido en tres secciones principales que conforman la lámina
 
     downloads: [
       { name: 'Lámina investigación', desc: 'PDF · 3 láminas A3', url: 'assets/pdf/c1-lamina-investigacion-taller-grafico-i-antonia-cajigal-copy.pdf', ext: 'PDF', size: '' },
-      { name: 'Etapa 2 · Lámina investigación actualizada', desc: 'PDF · doble carta vertical', url: 'assets/pdf/L2-3-INVESTIGACION_CAJIGAL_ANTONIA.pdf', ext: 'PDF', size: '' },
+      { name: 'Etapa 2 · Investigación completa actualizada', desc: 'PDF · investigación completa actualizada', url: 'assets/pdf/L1-INVESTIGACION_CAJIGAL_ANTONIA.pdf', ext: 'PDF', size: '' },
+      { name: 'Etapa 2 · Investigación compactada + construcción de marca', desc: 'PDF · lámina vertical', url: 'assets/pdf/L2-3-INVESTIGACION_CAJIGAL_ANTONIA.pdf', ext: 'PDF', size: '' },
+      { name: 'Etapa 2 · Bocetos y apuntes', desc: 'PDF · proceso y exploraciones', url: 'assets/pdf/bocetos y apuntes.pdf', ext: 'PDF', size: '' },
     ],
 
     notes: `
@@ -161,9 +163,19 @@ Se estructuraron **dos láminas doble carta en formato vertical** para ordenar j
       `,
       pdfs: [
         {
+          src: 'assets/pdf/L1-INVESTIGACION_CAJIGAL_ANTONIA.pdf',
+          label: 'Lámina de investigación completa actualizada',
+          description: 'PDF de investigación completa actualizada · Affinity Studio'
+        },
+        {
           src: 'assets/pdf/L2-3-INVESTIGACION_CAJIGAL_ANTONIA.pdf',
-          label: 'Investigación actualizada + construcción de marca',
-          description: 'PDF con ambas láminas doble carta vertical · Affinity Studio'
+          label: 'Lámina de investigación compactada y construcción de marca',
+          description: 'PDF de lámina vertical compacta · Affinity Studio'
+        },
+        {
+          src: 'assets/pdf/bocetos y apuntes.pdf',
+          label: 'Bocetos y apuntes',
+          description: 'PDF de proceso, bocetos y notas de desarrollo'
         },
       ],
     },
